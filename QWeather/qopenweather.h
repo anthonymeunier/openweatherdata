@@ -3,7 +3,6 @@
 
 #include <QObject>
 
-#include "../libweather/networking.h"
 #include "../libweather/openweathermap.h"
 #include "../libweather/weather.h"
 
@@ -18,9 +17,7 @@ class QOpenWeather : public QObject
 		Q_INVOKABLE QString getSummary(const QString &city);
 
 	private:
-		Networking networking;
 		OpenWeatherMap repository;
-
 		Weather weather;
 
 	signals:

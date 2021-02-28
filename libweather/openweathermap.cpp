@@ -110,3 +110,10 @@ std::string OpenWeatherMap::getServiceUrl()
 }
 
 
+OpenWeatherMap weather::fromOpenWeatherMap(const std::string& keyfile)
+{
+	Networking networking;
+	const std::string& key = OpenWeatherMap::getKeyFromFile(keyfile);
+
+	return OpenWeatherMap(networking, key);
+}

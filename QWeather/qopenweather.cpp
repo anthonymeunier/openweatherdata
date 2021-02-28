@@ -1,6 +1,6 @@
 #include "qopenweather.h"
 
-QOpenWeather::QOpenWeather(QObject *parent) : QObject(parent), repository(networking, OpenWeatherMap::getKeyFromFile("apikey.conf")), weather(repository)
+QOpenWeather::QOpenWeather(QObject *parent) : QObject(parent), repository(weather::fromOpenWeatherMap("apikey.conf")), weather(repository)
 {
 
 }

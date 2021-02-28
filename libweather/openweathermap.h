@@ -62,4 +62,9 @@ class OpenWeatherMap : public WeatherRepositoryInterface
 
 };
 
+namespace weather
+{
+	OpenWeatherMap fromOpenWeatherMap(const std::string& keyfile);
+}
+
 #endif // WEATHERREPOSITORY_H

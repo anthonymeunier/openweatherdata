@@ -5,7 +5,6 @@
 #include <thread>
 #include <chrono>
 
-#include "../libweather/networking.h"
 #include "../libweather/openweathermap.h"
 #include "../libweather/weather.h"
 
@@ -36,9 +35,7 @@ int main(int argc, char** argv)
 
 	std::string city = vm["city"].as<std::string>();
 
-	Networking networking;
-	OpenWeatherMap repository(networking, OpenWeatherMap::getKeyFromFile("apikey.conf"));
-
+	OpenWeatherMap repository(weather::fromOpenWeatherMap("apikey.conf"));
 	Weather weather(repository);
 
 	for (;;)
