@@ -74,7 +74,7 @@ OpenWeatherMap::City& OpenWeatherMap::update(const std::string& cityname)
 	if (it == cache.end())
 	{
 		std::string requesturl = getServiceUrl() + "weather?q=" + cityname + "&appid=" + key;
-		std::string result = networking.httprequest(service_domain, requesturl);
+		std::string result = networking->httprequest(service_domain, requesturl);
 		boost::json::value object = boost::json::parse(result);
 
 		City city(object);
@@ -87,7 +87,7 @@ OpenWeatherMap::City& OpenWeatherMap::update(const std::string& cityname)
 	if (not city.isFresh())
 	{
 		std::string requesturl = getServiceUrl() + "weather?id=" + std::to_string(city.id) + "&appid=" + key;
-		std::string result = networking.httprequest(service_domain, requesturl);
+		std::string result = networking->httprequest(service_domain, requesturl);
 		boost::json::value object = boost::json::parse(result);
 
 		city.updateFromJson(object);
@@ -110,10 +110,10 @@ std::string OpenWeatherMap::getServiceUrl()
 }
 
 
-OpenWeatherMap weather::fromOpenWeatherMap(const std::string& keyfile)
+std::shared_ptr<WeatherRepositoryInterface> weather::repository::fromOpenWeatherMap(const std::string& keyfile)
 {
-	Networking networking;
+	std::shared_ptr<Networking> networking = std::make_shared<Networking>();
 	const std::string& key = OpenWeatherMap::getKeyFromFile(keyfile);
 
-	return OpenWeatherMap(networking, key);
+	return std::shared_ptr<WeatherRepositoryInterface>(new OpenWeatherMap(networking, key));
 }

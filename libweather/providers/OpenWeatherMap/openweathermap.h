@@ -42,7 +42,7 @@ class OpenWeatherMap : public WeatherRepositoryInterface
 			bool isFresh();
 		};
 
-		OpenWeatherMap(Networking& networking, const std::string& key) : networking(networking), key(key)
+		OpenWeatherMap(std::shared_ptr<Networking> networking, const std::string& key) : networking(networking), key(key)
 		{
 		}
 
@@ -53,7 +53,7 @@ class OpenWeatherMap : public WeatherRepositoryInterface
 
 		City& update(const std::string& cityname);
 
-		Networking& networking;
+		std::shared_ptr<Networking> networking;
 
 		const char* service_domain = "api.openweathermap.org";
 		const char* service_version = "2.5";
@@ -64,7 +64,10 @@ class OpenWeatherMap : public WeatherRepositoryInterface
 
 namespace weather
 {
-	OpenWeatherMap fromOpenWeatherMap(const std::string& keyfile);
+	namespace repository
+	{
+		std::shared_ptr<WeatherRepositoryInterface> fromOpenWeatherMap(const std::string& keyfile);
+	}
 }
 
 #endif // WEATHERREPOSITORY_H

@@ -5,7 +5,6 @@
 #include <thread>
 #include <chrono>
 
-#include "../libweather/providers/OpenWeatherMap/openweathermap.h"
 #include "../libweather/weather.h"
 
 #include <boost/program_options.hpp>
@@ -35,14 +34,13 @@ int main(int argc, char** argv)
 
 	std::string city = vm["city"].as<std::string>();
 
-	OpenWeatherMap repository(weather::fromOpenWeatherMap("apikey.conf"));
-	Weather weather(repository);
+	std::shared_ptr<Weather> weather = weather::fromOpenWeatherMap("apikey.conf");
 
 	for (;;)
 	{
-		float temperature = weather.temperature(city);
-		float feels_like = weather.feels_like(city);
-		float windspeed = weather.windspeed(city);
+		float temperature = weather->temperature(city);
+		float feels_like = weather->feels_like(city);
+		float windspeed = weather->windspeed(city);
 		std::cout << temperature << " " << feels_like << " " << windspeed << "\n";
 		if (delay == 0)
 		{

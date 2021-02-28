@@ -3,7 +3,6 @@
 
 #include <QObject>
 
-#include "../libweather/providers/OpenWeatherMap/openweathermap.h"
 #include "../libweather/weather.h"
 
 class QOpenWeather : public QObject
@@ -17,8 +16,7 @@ class QOpenWeather : public QObject
 		Q_INVOKABLE QString getSummary(const QString &city);
 
 	private:
-		OpenWeatherMap repository;
-		Weather weather;
+		std::shared_ptr<Weather> weather;
 
 	signals:
 
