@@ -10,7 +10,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
 find_package(Threads REQUIRED)
-find_package(Boost REQUIRED COMPONENTS json program_options)
+find_package(Boost REQUIRED COMPONENTS json program_options python)
 
 add_library(weather SHARED
     libweather/networking/networking.cpp
@@ -45,6 +45,6 @@ add_library(weather-js
     libweatherjs/bind.cpp)
 target_link_libraries(weather-js PRIVATE weather)
 
-add_library(weather-py
-    libweatherpy/bind.cpp)
-target_link_libraries(weather-py PRIVATE weather)
+find_package(Python COMPONENTS Development REQUIRED)
+add_library(weatherpy SHARED libweatherpy/bind.cpp)
+target_link_libraries(weatherpy PRIVATE weather Python::Python Boost::python)
