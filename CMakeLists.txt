@@ -13,20 +13,24 @@ find_package(Threads REQUIRED)
 find_package(Boost REQUIRED COMPONENTS json program_options)
 
 add_library(openweather
-    networking.cpp
-    networking.h
-    weatherrepositoryinterface.h
-    openweathermap.cpp
-    openweathermap.h
-    weather.cpp
-    weather.h)
+    libweather/networking.cpp
+    libweather/networking.h
+    libweather/weatherrepositoryinterface.h
+    libweather/openweathermap.cpp
+    libweather/openweathermap.h
+    libweather/weather.cpp
+    libweather/weather.h)
 target_link_libraries(openweather PRIVATE Threads::Threads Boost::json Boost::program_options)
 
-add_executable(CLIWeather cli.cpp)
+add_executable(CLIWeather CLIWeather/cli.cpp)
 target_link_libraries(CLIWeather PRIVATE openweather)
 
 find_package(Qt5 COMPONENTS Widgets Qml Quick REQUIRED)
-add_executable(QWeather qweather.cpp resources.qrc qopenweather.cpp qopenweather.h)
+add_executable(QWeather
+    QWeather/qweather.cpp
+    QWeather/resources.qrc
+    QWeather/qopenweather.cpp
+    QWeather/qopenweather.h)
 target_link_libraries(QWeather PRIVATE openweather
     Qt5::Core
     Qt5::Widgets

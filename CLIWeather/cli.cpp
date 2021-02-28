@@ -5,9 +5,9 @@
 #include <thread>
 #include <chrono>
 
-#include "networking.h"
-#include "openweathermap.h"
-#include "weather.h"
+#include "../libweather/networking.h"
+#include "../libweather/openweathermap.h"
+#include "../libweather/weather.h"
 
 #include <boost/program_options.hpp>
 
