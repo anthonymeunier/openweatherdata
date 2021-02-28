@@ -3,7 +3,7 @@
 
 #include <QObject>
 
-#include "../libweather/weather.h"
+#include "libweather.h"
 
 class QOpenWeather : public QObject
 {

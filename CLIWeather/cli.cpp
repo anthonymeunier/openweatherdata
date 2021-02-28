@@ -5,7 +5,7 @@
 #include <thread>
 #include <chrono>
 
-#include "../libweather/weather.h"
+#include "libweather.h"
 
 #include <boost/program_options.hpp>
 
@@ -17,16 +17,19 @@ int main(int argc, char** argv)
 
 	po::options_description options("Allowed options");
 	options.add_options()
-	        ("help", "produce help message")
-	        ("delay", po::value<int>(&delay)->default_value(0), "ping delay")
+	        ("help", "Produce help message")
+	        ("delay,d", po::value<int>(&delay)->default_value(0), "Ping delay in milliseconds")
 	        ("city", po::value<std::string>(), "City")
 	;
 
+	po::positional_options_description positional;
+	positional.add("city", 1);
+
 	po::variables_map vm;
-	po::store(po::parse_command_line(argc, argv, options), vm);
+	po::store(po::command_line_parser(argc, argv).options(options).positional(positional).run(), vm);
 	po::notify(vm);
 
-	if (vm.count("help"))
+	if (vm.count("help") or vm.count("city") != 1)
 	{
 		std::cout << options << "\n";
 		return 0;

@@ -18,8 +18,11 @@ add_library(openweather
     libweather/providers/weatherrepositoryinterface.h
     libweather/providers/OpenWeatherMap/openweathermap.cpp
     libweather/providers/OpenWeatherMap/openweathermap.h
-    libweather/weather.cpp
-    libweather/weather.h)
+    libweather/src/libweather.cpp
+    libweather/libweather.h)
+set_target_properties(openweather PROPERTIES
+    PUBLIC_HEADER libweather/libweather.h
+    INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_SOURCE_DIR}/libweather)
 target_link_libraries(openweather PRIVATE Threads::Threads Boost::json Boost::program_options)
 
 add_executable(CLIWeather CLIWeather/cli.cpp)

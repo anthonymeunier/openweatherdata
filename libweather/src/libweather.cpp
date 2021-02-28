@@ -1,5 +1,5 @@
-#include "providers/OpenWeatherMap/openweathermap.h"
-#include "weather.h"
+#include "../providers/OpenWeatherMap/openweathermap.h"
+#include "../libweather.h"
 
 float Weather::temperature(const std::string& city)
 {
