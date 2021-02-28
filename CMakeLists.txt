@@ -12,7 +12,7 @@ set(CMAKE_AUTORCC ON)
 find_package(Threads REQUIRED)
 find_package(Boost REQUIRED COMPONENTS json program_options)
 
-add_library(openweather
+add_library(libweather
     libweather/networking/networking.cpp
     libweather/networking/networking.h
     libweather/providers/weatherrepositoryinterface.h
@@ -20,13 +20,13 @@ add_library(openweather
     libweather/providers/OpenWeatherMap/openweathermap.h
     libweather/src/libweather.cpp
     libweather/libweather.h)
-set_target_properties(openweather PROPERTIES
+set_target_properties(libweather PROPERTIES
     PUBLIC_HEADER libweather/libweather.h
     INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_SOURCE_DIR}/libweather)
-target_link_libraries(openweather PRIVATE Threads::Threads Boost::json Boost::program_options)
+target_link_libraries(libweather PRIVATE Threads::Threads Boost::json Boost::program_options)
 
 add_executable(CLIWeather CLIWeather/cli.cpp)
-target_link_libraries(CLIWeather PRIVATE openweather)
+target_link_libraries(CLIWeather PRIVATE libweather)
 
 find_package(Qt5 COMPONENTS Widgets Qml Quick REQUIRED)
 add_executable(QWeather
@@ -34,7 +34,7 @@ add_executable(QWeather
     QWeather/resources.qrc
     QWeather/qopenweather.cpp
     QWeather/qopenweather.h)
-target_link_libraries(QWeather PRIVATE openweather
+target_link_libraries(QWeather PRIVATE libweather
     Qt5::Core
     Qt5::Widgets
     Qt5::Gui
