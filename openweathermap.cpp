@@ -6,26 +6,95 @@
 
 #include <time.h>
 
-float OpenWeatherMap::getTemperature(const std::string& city)
+float OpenWeatherMap::getTemperature(const std::string& cityname)
 {
-	return fetchTemperature(getCitycode(city));
+	City& city = update(cityname);
+	return city.temperature;
 }
 
-float OpenWeatherMap::getFeelsLike(const std::string& city)
+float OpenWeatherMap::getFeelsLike(const std::string& cityname)
 {
-	return fetchFeelsLike(getCitycode(city));
+	City& city = update(cityname);
+	return city.feelslike;
 }
 
-float OpenWeatherMap::getWindSpeed(const std::string &city)
+float OpenWeatherMap::getWindSpeed(const std::string &cityname)
 {
-	return fetchWindSpeed(getCitycode(city));
+	City& city = update(cityname);
+	return city.windspeed;
 }
 
-std::string OpenWeatherMap::getSummary(const std::string &city)
+std::string OpenWeatherMap::getSummary(const std::string &cityname)
 {
-	return fetchSummary(getCitycode(city));
+	City& city = update(cityname);
+	return city.summary;
 }
 
+OpenWeatherMap::City::City(boost::json::value& object) :
+    name(object.get_object()["name"].get_string().c_str()),
+    country(object.get_object()["sys"].get_object()["country"].get_string().c_str()),
+    id(static_cast<int>(object.get_object()["id"].get_int64()))
+{
+	updateFromJson(object);
+}
+
+bool OpenWeatherMap::City::isFresh()
+{
+	time_t timestamp = std::time(nullptr);
+
+	unsigned long seconds = difftime(timestamp, cache_timestamp);
+	unsigned long fresh = 60;
+	return seconds < fresh;
+}
+void OpenWeatherMap::City::updateFromJson(boost::json::value &object)
+{
+	time_t timestamp = std::time(nullptr);
+	unsigned long now = difftime(timestamp, 0);
+
+	cache_timestamp = now;
+	calculation_timestamp = static_cast<unsigned long>(object.get_object()["dt"].get_int64());
+	temperature = static_cast<float>(object.get_object()["main"].get_object()["temp"].get_double());
+	feelslike = static_cast<float>(object.get_object()["main"].get_object()["feels_like"].get_double());
+	windspeed = static_cast<float>(object.get_object()["wind"].get_object()["speed"].get_double());
+	summary = "empty";
+
+	if (object.get_object()["weather"].is_array())
+	{
+		summary = object.get_object()["weather"].get_array()[0].get_object()["description"].get_string().c_str();
+	}
+	else
+	{
+		summary = object.get_object()["weather"].get_object()["description"].get_string().c_str();
+	}
+}
+
+OpenWeatherMap::City& OpenWeatherMap::update(const std::string& cityname)
+{
+	auto it = cache.find(cityname);
+	if (it == cache.end())
+	{
+		std::string requesturl = getServiceUrl() + "weather?q=" + cityname + "&appid=" + key;
+		std::string result = networking.httprequest(service_domain, requesturl);
+		boost::json::value object = boost::json::parse(result);
+
+		City city(object);
+		cache[cityname] = std::move(city);
+		return cache[cityname];
+	}
+
+	City& city = it->second;
+
+	if (not city.isFresh())
+	{
+		std::string requesturl = getServiceUrl() + "weather?id=" + std::to_string(city.id) + "&appid=" + key;
+		std::string result = networking.httprequest(service_domain, requesturl);
+		boost::json::value object = boost::json::parse(result);
+
+		city.updateFromJson(object);
+	}
+
+	return cache[cityname];
+}
 
 std::string OpenWeatherMap::getKeyFromFile(const std::string& filename)
 {
@@ -35,96 +104,9 @@ std::string OpenWeatherMap::getKeyFromFile(const std::string& filename)
 	return line;
 }
 
-void OpenWeatherMap::print_cache()
-{
-	if (cache.empty())
-	{
-		std::cout << "Cache is empty" << std::endl;
-		return;
-	}
-	for (auto& city : cache)
-	{
-		std::cout << city.second << std::endl;
-	}
-}
-
 std::string OpenWeatherMap::getServiceUrl()
 {
 	return "/data/" + std::string(service_version) + "/";
 }
 
-float OpenWeatherMap::fetchTemperature(int citycode)
-{
-	updateCache(citycode);
-	return cache[citycode].get_object()["main"].get_object()["temp"].get_double();
-}
-
-float OpenWeatherMap::fetchFeelsLike(int citycode)
-{
-	updateCache(citycode);
-	return cache[citycode].get_object()["main"].get_object()["feels_like"].get_double();
-}
-
-float OpenWeatherMap::fetchWindSpeed(int citycode)
-{
-	updateCache(citycode);
-	return cache[citycode].get_object()["wind"].get_object()["speed"].get_double();
-}
-
-std::string OpenWeatherMap::fetchSummary(int citycode)
-{
-	updateCache(citycode);
-	boost::json::value& weather = cache[citycode].get_object()["weather"];
-	if (weather.is_array())
-	{
-		return weather.get_array().at(0).get_object()["description"].get_string().c_str();
-	}
-
-	return std::string(weather.get_object()["description"].get_string().c_str());
-}
-
-
-unsigned long OpenWeatherMap::getTimestamp(int citycode)
-{
-	return cache[citycode].get_object()["dt"].get_int64();
-}
-
-void OpenWeatherMap::updateCache(int citycode)
-{
-	bool outdated = false;
-
-	if (cache.find(citycode) == cache.end())
-	{
-		outdated = true;
-	}
-	else
-	{
-		time_t timestamp = time(nullptr);
-		unsigned long seconds = difftime(timestamp, getTimestamp(citycode));
-		unsigned long fresh = 5*60;
-		if (seconds >= fresh)
-		{
-			outdated = true;
-		}
-	}
-
-	if (outdated)
-	{
-		std::string requesturl = getServiceUrl() + "weather?id=" + std::to_string(citycode) + "&appid=" + key;
-		std::string result = networking.httprequest(service_domain, requesturl);
-		cache[citycode] = boost::json::parse(result);
-	}
-}
-
-int OpenWeatherMap::getCitycode(const std::string& cityname)
-{
-	for (auto& citydesc : citylist.get_array())
-	{
-		if (citydesc.get_object()["name"].get_string() == cityname)
-		{
-			return citydesc.get_object()["id"].get_int64();
-		}
-	}
-	return 0;
-}
 

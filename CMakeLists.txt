@@ -10,7 +10,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
 find_package(Threads REQUIRED)
-find_package(Boost REQUIRED COMPONENTS json)
+find_package(Boost REQUIRED COMPONENTS json program_options)
 
 add_library(openweather
     networking.cpp
@@ -20,7 +20,7 @@ add_library(openweather
     openweathermap.h
     weather.cpp
     weather.h)
-target_link_libraries(openweather PRIVATE Threads::Threads Boost::json)
+target_link_libraries(openweather PRIVATE Threads::Threads Boost::json Boost::program_options)
 
 add_executable(CLIWeather cli.cpp)
 target_link_libraries(CLIWeather PRIVATE openweather)

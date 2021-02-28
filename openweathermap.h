@@ -15,51 +15,50 @@
 class OpenWeatherMap : public WeatherRepositoryInterface
 {
 	public:	
-		OpenWeatherMap(Networking& networking, const std::string& key, const std::string& citylistfile) : networking(networking), key(key)
+		float getTemperature(const std::string& cityname);
+
+		float getFeelsLike(const std::string& cityname);
+
+		float getWindSpeed(const std::string& cityname);
+
+		std::string getSummary(const std::string& cityname);
+
+		struct City {
+			std::string name;
+			std::string country;
+			int id;
+			unsigned long cache_timestamp;
+			unsigned long calculation_timestamp;
+			float temperature;
+			float feelslike;
+			float windspeed;
+			std::string summary;
+
+			City() {}
+			City(boost::json::value& object);
+
+			void updateFromJson(boost::json::value& object);
+
+			bool isFresh();
+		};
+
+		OpenWeatherMap(Networking& networking, const std::string& key) : networking(networking), key(key)
 		{
-			std::ifstream cityfile(citylistfile);
-			boost::json::stream_parser parser;
-
-			char line[256];
-			while (cityfile.getline(line, 256))
-			{
-				parser.write(line);
-			}
-
-			citylist = parser.release();
 		}
 
-		float getTemperature(const std::string& city);
-
-		float getFeelsLike(const std::string& city);
-
-		float getWindSpeed(const std::string& city);
-
-		std::string getSummary(const std::string& city);
-
 		static std::string getKeyFromFile(const std::string& filename);
-
-		void print_cache();
 
 	private:
 		std::string getServiceUrl();
 
-		float fetchTemperature(int citycode);
-		float fetchFeelsLike(int citycode);
-		float fetchWindSpeed(int citycode);
-		std::string fetchSummary(int citycode);
-
-		unsigned long getTimestamp(int citycode);
-		void updateCache(int citycode);
-		int getCitycode(const std::string& cityname);
+		City& update(const std::string& cityname);
 
 		Networking& networking;
 
 		const char* service_domain = "api.openweathermap.org";
 		const char* service_version = "2.5";
 		std::string key;
-		boost::json::value citylist;
-		std::map<int, boost::json::value> cache;
+		std::map<std::string, City> cache;
 
 };
 
