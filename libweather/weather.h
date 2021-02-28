@@ -1,7 +1,7 @@
 #ifndef WEATHER_H
 #define WEATHER_H
 
-#include "weatherrepositoryinterface.h"
+#include "providers/weatherrepositoryinterface.h"
 #include <string>
 
 class Weather

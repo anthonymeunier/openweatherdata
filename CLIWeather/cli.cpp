@@ -5,7 +5,7 @@
 #include <thread>
 #include <chrono>
 
-#include "../libweather/openweathermap.h"
+#include "../libweather/providers/OpenWeatherMap/openweathermap.h"
 #include "../libweather/weather.h"
 
 #include <boost/program_options.hpp>

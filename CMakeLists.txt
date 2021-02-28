@@ -13,11 +13,11 @@ find_package(Threads REQUIRED)
 find_package(Boost REQUIRED COMPONENTS json program_options)
 
 add_library(openweather
-    libweather/networking.cpp
-    libweather/networking.h
-    libweather/weatherrepositoryinterface.h
-    libweather/openweathermap.cpp
-    libweather/openweathermap.h
+    libweather/networking/networking.cpp
+    libweather/networking/networking.h
+    libweather/providers/weatherrepositoryinterface.h
+    libweather/providers/OpenWeatherMap/openweathermap.cpp
+    libweather/providers/OpenWeatherMap/openweathermap.h
     libweather/weather.cpp
     libweather/weather.h)
 target_link_libraries(openweather PRIVATE Threads::Threads Boost::json Boost::program_options)

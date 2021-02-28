@@ -7,8 +7,8 @@
 #include <string>
 #include <map>
 
-#include "weatherrepositoryinterface.h"
-#include "networking.h"
+#include "../weatherrepositoryinterface.h"
+#include "../../networking/networking.h"
 
 #include <memory>
 
