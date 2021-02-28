@@ -26,6 +26,6 @@ class Weather
 
 namespace weather
 {
-	std::shared_ptr<Weather> fromOpenWeatherMap(const std::string& keyfile);
+	Weather fromOpenWeatherMap(const std::string& keyfile);
 }
 #endif // WEATHER_H

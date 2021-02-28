@@ -21,8 +21,8 @@ std::string Weather::summary(const std::string &city)
 	return repository->getSummary(city);
 }
 
-std::shared_ptr<Weather> weather::fromOpenWeatherMap(const std::string& keyfile)
+Weather weather::fromOpenWeatherMap(const std::string& keyfile)
 {
 	std::shared_ptr<WeatherRepositoryInterface> repository = repository::fromOpenWeatherMap(keyfile);
-	return std::make_shared<Weather>(repository);
+	return Weather(repository);
 }

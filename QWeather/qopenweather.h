@@ -16,7 +16,7 @@ class QOpenWeather : public QObject
 		Q_INVOKABLE QString getSummary(const QString &city);
 
 	private:
-		std::shared_ptr<Weather> weather;
+		Weather weather;
 
 	signals:
 
