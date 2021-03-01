@@ -41,10 +41,6 @@ target_link_libraries(QWeather PRIVATE weather
     Qt5::Qml
     Qt5::Quick)
 
-add_library(weather-js
-    libweatherjs/bind.cpp)
-target_link_libraries(weather-js PRIVATE weather)
-
 find_package(Python COMPONENTS Development REQUIRED)
 add_library(weatherpy SHARED libweatherpy/bind.cpp)
 target_link_libraries(weatherpy PRIVATE weather Python::Python Boost::python)

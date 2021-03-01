@@ -9,25 +9,25 @@
 float OpenWeatherMap::getTemperature(const std::string& cityname)
 {
 	City& city = update(cityname);
-	return city.temperature;
+	return city.now.temperature;
 }
 
 float OpenWeatherMap::getFeelsLike(const std::string& cityname)
 {
 	City& city = update(cityname);
-	return city.feelslike;
+	return city.now.feelslike;
 }
 
 float OpenWeatherMap::getWindSpeed(const std::string &cityname)
 {
 	City& city = update(cityname);
-	return city.windspeed;
+	return city.now.windspeed;
 }
 
 std::string OpenWeatherMap::getSummary(const std::string &cityname)
 {
 	City& city = update(cityname);
-	return city.summary;
+	return city.now.summary;
 }
 
 OpenWeatherMap::City::City(boost::json::value& object) :
@@ -49,22 +49,22 @@ bool OpenWeatherMap::City::isFresh()
 void OpenWeatherMap::City::updateFromJson(boost::json::value &object)
 {
 	time_t timestamp = std::time(nullptr);
-	unsigned long now = difftime(timestamp, 0);
+	unsigned long date = difftime(timestamp, 0);
 
-	cache_timestamp = now;
-	calculation_timestamp = static_cast<unsigned long>(object.get_object()["dt"].get_int64());
-	temperature = static_cast<float>(object.get_object()["main"].get_object()["temp"].get_double());
-	feelslike = static_cast<float>(object.get_object()["main"].get_object()["feels_like"].get_double());
-	windspeed = static_cast<float>(object.get_object()["wind"].get_object()["speed"].get_double());
-	summary = "empty";
+	cache_timestamp = date;
+	now.calculation_timestamp = static_cast<unsigned long>(object.get_object()["dt"].get_int64());
+	now.temperature = static_cast<float>(object.get_object()["main"].get_object()["temp"].get_double());
+	now.feelslike = static_cast<float>(object.get_object()["main"].get_object()["feels_like"].get_double());
+	now.windspeed = static_cast<float>(object.get_object()["wind"].get_object()["speed"].get_double());
+	now.summary = "empty";
 
 	if (object.get_object()["weather"].is_array())
 	{
-		summary = object.get_object()["weather"].get_array()[0].get_object()["description"].get_string().c_str();
+		now.summary = object.get_object()["weather"].get_array()[0].get_object()["description"].get_string().c_str();
 	}
 	else
 	{
-		summary = object.get_object()["weather"].get_object()["description"].get_string().c_str();
+		now.summary = object.get_object()["weather"].get_object()["description"].get_string().c_str();
 	}
 }
 

@@ -12,5 +12,3 @@ BOOST_PYTHON_MODULE(libweatherpy)
 	        .def("summary", &Weather::summary)
 	;
 }
-
-

@@ -23,16 +23,21 @@ class OpenWeatherMap : public WeatherRepositoryInterface
 
 		std::string getSummary(const std::string& cityname);
 
-		struct City {
-			std::string name;
-			std::string country;
-			int id;
-			unsigned long cache_timestamp;
+		struct WeatherData {
 			unsigned long calculation_timestamp;
 			float temperature;
 			float feelslike;
 			float windspeed;
 			std::string summary;
+		};
+
+		struct City {
+			std::string name;
+			std::string country;
+			int id;
+			unsigned long cache_timestamp;
+			WeatherData now;
+			std::vector<WeatherData> forecast;
 
 			City() {}
 			City(boost::json::value& object);
